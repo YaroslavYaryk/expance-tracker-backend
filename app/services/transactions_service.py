@@ -47,7 +47,7 @@ def decode_cursor(cursor: str):
 class TransactionsService:
     def __init__(self, db: Session):
         self.db = db
-        self.repo = TransactionsRepo(db)
+        self.tx_repo = TransactionsRepo(db)
         self.cat_repo = CategoriesRepo(db)
 
     def ensure_category(self, user_id, category_id):
@@ -138,7 +138,7 @@ class TransactionsService:
             updated_at=datetime.utcnow(),
         )
 
-        self.repo.create(tx)
+        self.tx_repo.create(tx)
         self.db.commit()
         return tx.id
 
@@ -236,7 +236,7 @@ class TransactionsService:
         self.db.commit()
 
     def delete(self, user, tx_id: UUID):
-        count = self.repo.delete(user.id, tx_id)
+        count = self.tx_repo.delete(user.id, tx_id)
         if count == 0:
             raise AppError("NOT_FOUND", "Transaction not found", status_code=404)
         self.db.commit()
@@ -246,7 +246,7 @@ class TransactionsService:
         pm_int = pm_to_int(payment_method) if payment_method else None
         cursor_dt, cursor_id = decode_cursor(cursor) if cursor else (None, None)
 
-        items = self.repo.list_cursor(
+        items = self.tx_repo.list_cursor(
             user_id=user.id,
             from_ts=from_ts,
             to_ts=to_ts,
@@ -267,7 +267,7 @@ class TransactionsService:
         return items, next_cursor
 
     def get_by_id(self, user, tx_id: UUID) -> Transaction:
-        tx = self.repo.get_by_id(user.id, tx_id)
+        tx = self.tx_repo.get_by_id(user.id, tx_id)
         if not tx:
             raise AppError("NOT_FOUND", "Transaction not found", status_code=404)
 

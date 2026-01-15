@@ -56,8 +56,9 @@ class TransactionCreateResponse(BaseModel):
 
 class TransactionUpdate(BaseModel):
     amount: str | None = None
-    occurredAt: str | None = None
+    occurredAt: datetime | None = None
     currency: Optional[str] = Field(default=None, min_length=3, max_length=3)  # optional change input currency
     categoryId: str | None = None
     paymentMethod: PaymentMethod | None = None
     note: str | None = Field(default=None, max_length=500)
+    type: TransactionType

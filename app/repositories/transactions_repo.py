@@ -25,6 +25,10 @@ class TransactionsRepo:
         res = self.db.execute(q)
         return res.rowcount or 0
 
+    def save(self, tx: Transaction):
+        self.db.add(tx)
+        self.db.flush()
+
     def delete(self, user_id, tx_id) -> int:
         q = delete(Transaction).where(Transaction.user_id == user_id, Transaction.id == tx_id)
         res = self.db.execute(q)
